@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-with-action">
+    <h1><i class="fas fa-coins"></i> Курсы валют</h1>
+    <div class="header-actions">
+        <a href="/currencies?refresh=true" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Обновить курсы
+        </a>
+        <span class="last-update">
+            Обновлено: {{ last_update }}
+        </span>
+    </div>
+</div>
+
+<div class="currency-filters">
+    <input type="text" id="searchInput" placeholder="Поиск по коду или названию..." class="search-input">
+    <select id="sortSelect" class="sort-select">
+        <option value="name">Сортировать по названию</option>
+        <option value="code">Сортировать по коду</option>
+        <option value="value">Сортировать по курсу</option>
+    </select>
+</div>
+
+<div class="currencies-grid">
+    {% for currency in currencies %}
+    <div class="currency-card-large">
+        <div class="currency-card-header">
+            <div class="currency-symbol">
+                {{ currency.char_code }}
+            </div>
+            <div class="currency-title">
+                <h3>{{ currency.name }}</h3>
+                <p class="currency-code">Код: {{ currency.num_code }}</p>
+            </div>
+        </div>
+        
+        <div class="currency-values">
+            <div class="value-item">
+                <span class="label">Курс ЦБ:</span>
+                <span class="value">{{ currency.value }} ₽</span>
+            </div>
+            <div class="value-item">
+                <span class="label">Номинал:</span>
+                <span class="value">{{ currency.nominal }}</span>
+            </div>
+            <div class="value-item">
+                <span class="label">За 1 единицу:</span>
+                <span class="value highlight">{{ "%.4f"|format(currency.unit_value) }} ₽</span>
+            </div>
+        </div>
+        
+        <div class="currency-actions">
+            <span class="currency-id">ID: {{ currency.id }}</span>
+            <button class="btn btn-sm btn-outline subscribe-btn" 
+                    data-currency-id="{{ currency.id }}"
+                    data-currency-name="{{ currency.name }}">
+                <i class="fas fa-bell"></i> Подписаться
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    <span>Всего валют: {{ currencies|length }}</span>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

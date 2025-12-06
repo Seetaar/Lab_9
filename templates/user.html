@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="user-profile">
+    <div class="profile-header">
+        <div class="avatar">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="profile-info">
+            <h1>{{ user.name }}</h1>
+            <p class="user-id">ID: {{ user.id }}</p>
+        </div>
+    </div>
+    
+    <div class="profile-sections">
+        <div class="section">
+            <h2><i class="fas fa-bell"></i> Подписки на валюты</h2>
+            {% if subscriptions %}
+            <div class="subscriptions-grid">
+                {% for currency in subscriptions %}
+                <div class="currency-card">
+                    <div class="currency-header">
+                        <span class="currency-code">{{ currency.char_code }}</span>
+                        <span class="currency-name">{{ currency.name }}</span>
+                    </div>
+                    <div class="currency-value">
+                        <strong>{{ "%.4f"|format(currency.unit_value) }} ₽</strong>
+                        <small>за 1 {{ currency.char_code }}</small>
+                    </div>
+                    <div class="currency-nominal">
+                        Номинал: {{ currency.nominal }}
+                    </div>
+                    <form method="POST" action="/user/subscribe" class="subscription-form">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <input type="hidden" name="currency_id" value="{{ currency.id }}">
+                        <button type="submit" name="action" value="unsubscribe" class="btn btn-danger btn-sm">
+                            <i class="fas fa-bell-slash"></i> Отписаться
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">Нет подписок на валюты</p>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-plus-circle"></i> Доступные валюты для подписки</h2>
+            {% if available_currencies %}
+            <div class="available-currencies">
+                {% for currency in available_currencies %}
+                <div class="available-currency-item">
+                    <div class="currency-info">
+                        <span class="code">{{ currency.char_code }}</span>
+                        <span class="name">{{ currency.name }}</span>
+                        <span class="value">{{ "%.4f"|format(currency.unit_value) }} ₽</span>
+                    </div>
+                    <form method="POST" action="/user/subscribe">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <input type="hidden" name="currency_id" value="{{ currency.id }}">
+                        <button type="submit" name="action" value="subscribe" class="btn btn-success btn-sm">
+                            <i class="fas fa-bell"></i> Подписаться
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">Нет доступных валют</p>
+            {% endif %}
+        </div>
+        
+        {% if chart_data %}
+        <div class="section">
+            <h2><i class="fas fa-chart-line"></i> Динамика курсов (последние 3 месяца)</h2>
+            <div class="chart-container">
+                <canvas id="currencyChart"></canvas>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if chart_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('currencyChart').getContext('2d');
+    const chartData = {{ chart_data|tojson }};
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: chartData.datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Динамика курсов валют'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Курс (руб.)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

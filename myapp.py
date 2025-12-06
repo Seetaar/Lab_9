@@ -1,7 +1,8 @@
+from jinja2 import Environment, PackageLoader, select_autoescape
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from models import author
-main_author = author.author("Lisa", "P3120")
-from controllers import CurrencyRatesCRUD
+main_author = author.Author("Lisa", "P3120")
+# from controllers import CurrencyRatesCRUD
 
 env = Environment(
     loader=PackageLoader("myapp"),
@@ -35,7 +36,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.end_headers()
-        # result = ""
         print(self.path)
         self.wfile.write(bytes(result, "utf-8"))
 
@@ -51,10 +51,10 @@ class CurrencyRatesMock():
         return self.__values
 
 
-c_r = CurrencyRatesMock()
-c_r_controller = CurrencyRatesCRUD(c_r)
-c_r_controller._create()
-c_r_controller._read()
+# c_r = CurrencyRatesMock()
+# c_r_controller = CurrencyRatesCRUD(c_r)
+# c_r_controller._create()
+# c_r_controller._read()
 
 if __name__ == "__main__":
     print('server is running')

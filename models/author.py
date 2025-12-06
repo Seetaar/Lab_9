@@ -14,7 +14,7 @@ class Author:
         if type(name) is str and len(name) >= 2:
             self.__name = name
         else:
-            raise ValueError('Ошибка при задании имени автора')
+            raise ValueError('Ошибка имени автора')
 
 
     @property
@@ -27,4 +27,4 @@ class Author:
         if type(group) is str and len(group) > 5:
             self.__group = group
         else:
-            raise ValueError('Ошибка при задании группы автора')
+            raise ValueError('Ошибка группы автора')
